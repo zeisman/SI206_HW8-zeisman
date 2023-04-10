@@ -15,7 +15,26 @@ def load_rest_data(db):
     and each inner key is a dictionary, where the key:value pairs should be the category, 
     building, and rating for the restaurant.
     """
-    pass
+    restaurants_dict = {}
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+
+    cur.execute('SELECT restaurants.name, categories.category, buildings.building, restaurants.rating FROM restaurants JOIN categories ON restaurants.category_id = categories.id JOIN buildings ON restaurants.building_id = buildings.id')
+    for row in cur:
+        #print(row)
+        restuarant_name = row[0]
+        restaurants_dict[restuarant_name] = {}
+        category = row[1]
+        building = row[2]
+        rating = row[3]
+        restaurants_dict[restuarant_name]['category'] = category
+        restaurants_dict[restuarant_name]['building'] = building
+        restaurants_dict[restuarant_name]['rating'] = rating
+    #print(restaurants_dict)
+    return restaurants_dict
+
+        
 
 def plot_rest_categories(db):
     """
@@ -49,7 +68,7 @@ def get_highest_rating(db): #Do this through DB as well
 
 #Try calling your functions here
 def main():
-    pass
+    load_rest_data('South_U_Restaurants.db')
 
 class TestHW8(unittest.TestCase):
     def setUp(self):
