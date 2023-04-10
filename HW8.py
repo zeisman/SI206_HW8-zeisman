@@ -1,7 +1,7 @@
-# Your name: 
-# Your student id:
-# Your email:
-# List who you have worked with on this homework:
+# Your name: Zack Eisman
+# Your student id: 33829100
+# Your email: zeisman@umich.edu
+# List who you have worked with on this homework: Liam Kendall
 
 import matplotlib.pyplot as plt
 import os
@@ -42,7 +42,28 @@ def plot_rest_categories(db):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the count of number of restaurants in each category.
     """
-    pass
+    restaurant_type_dict = {}
+    plt.figure(1, figsize=(18,8))
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+
+    cur.execute('SELECT restaurants.category_id, categories.category, COUNT(*) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category')
+    for row in cur:
+        category = row[1]
+        count = row[2]
+        restaurant_type_dict[category] = count
+    #print(restaurant_type_dict)
+    sorted_by_count = sorted(restaurant_type_dict.items(), key = lambda x: x[1])
+    restaurant_types = []
+    counts = []
+    for tup in sorted_by_count:
+        restaurant_types.append(tup[0])
+        counts.append(tup[1])
+    plt.barh(restaurant_types, counts)
+    plt.show()
+    return restaurant_type_dict
+
 
 def find_rest_in_building(building_num, db):
     '''
