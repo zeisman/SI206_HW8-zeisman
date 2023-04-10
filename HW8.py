@@ -43,7 +43,7 @@ def plot_rest_categories(db):
     also create a bar chart with restaurant categories and the count of number of restaurants in each category.
     """
     restaurant_type_dict = {}
-    plt.figure(1, figsize=(18,8))
+    plt.figure(1, figsize=(8,8))
     path = os.path.dirname(os.path.abspath(__file__))
     conn = sqlite3.connect(path+'/'+db)
     cur = conn.cursor()
@@ -61,6 +61,10 @@ def plot_rest_categories(db):
         restaurant_types.append(tup[0])
         counts.append(tup[1])
     plt.barh(restaurant_types, counts)
+    plt.xlabel('Number of Restaurants')
+    plt.xlim([0, 5])
+    plt.ylabel('Restaurant Categories')
+    plt.suptitle('Types of Restaurants on South University Ave')
     plt.show()
     return restaurant_type_dict
 
@@ -71,7 +75,16 @@ def find_rest_in_building(building_num, db):
     restaurant names. You need to find all the restaurant names which are in the specific building. The restaurants 
     should be sorted by their rating from highest to lowest.
     '''
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+    building_restaurants = []
+
+    cur.execute(f"SELECT buildings.building, restaurants.name, restaurants.rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id WHERE buildings.building = {building_num} ORDER BY restaurants.rating DESC")
+    for row in cur:
+        building_restaurants.append(row[1])
+    return building_restaurants
+
 
 #EXTRA CREDIT
 def get_highest_rating(db): #Do this through DB as well
@@ -85,11 +98,60 @@ def get_highest_rating(db): #Do this through DB as well
     The second bar chart displays the buildings along the y-axis and their ratings along the x-axis 
     in descending order (by rating).
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db)
+    cur = conn.cursor()
+    highest_ratings = []
+    plt.figure(1, figsize = (8,8))
+    
+    cur.execute('SELECT categories.category, avg(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category ORDER BY avg(restaurants.rating) DESC')
+    i = 0
+    categories = []
+    ratings1 = []
+    for row in cur:
+        #print(row)
+        if i == 0:
+            highest_ratings.append(row)
+            i += 1
+        categories.append(str(row[0]))
+        ratings1.append(row[1])
+    plt.subplot(211)
+    plt.barh(categories, ratings1)
+    plt.xlabel('Ratings')
+    plt.xlim([0, 5])
+    plt.ylabel('Categories')
+    #plt.set_title('Average Restaurant Ratings by Category')
+
+    
+    cur.execute('SELECT buildings.building, avg(restaurants.rating) FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id GROUP BY buildings.building ORDER BY avg(restaurants.rating) DESC')
+    i = 0
+    buildings = []
+    ratings2 = []
+    for row in cur:
+        #print(row)
+        if i == 0:
+            highest_ratings.append(row)
+            i += 1
+        buildings.append(str(row[0]))
+        ratings2.append(row[1])
+    plt.subplot(212)
+    plt.barh(buildings, ratings2)
+    plt.xlabel('Ratings')
+    plt.xlim([0, 5])
+    plt.ylabel('Buildings')
+    #plt set title of small graph
+    
+    #plt set title of entire thing
+    plt.show()
+    print(highest_ratings)
+    return highest_ratings
+
 
 #Try calling your functions here
 def main():
     load_rest_data('South_U_Restaurants.db')
+    #plot_rest_categories('South_U_Restaurants.db')
+    find_rest_in_building('1140', 'South_U_Restaurants.db')
 
 class TestHW8(unittest.TestCase):
     def setUp(self):
