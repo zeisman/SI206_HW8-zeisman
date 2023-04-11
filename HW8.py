@@ -65,7 +65,7 @@ def plot_rest_categories(db):
     plt.xlim([0, 5])
     plt.ylabel('Restaurant Categories')
     plt.suptitle('Types of Restaurants on South University Ave')
-    #plt.show()
+    plt.show()
     return restaurant_type_dict
 
 
@@ -112,7 +112,7 @@ def get_highest_rating(db): #Do this through DB as well
     highest_rating1 = 0
     highest_category = ''
     for row in cur:
-        print(row)
+        #print(row)
         if row[1] > highest_rating1:
             highest_rating1 = row[1]
             highest_category = row[0]
@@ -148,7 +148,7 @@ def get_highest_rating(db): #Do this through DB as well
     plt.title('Average Restaurant Ratings by Building')
     
     plt.show()
-    print(highest_ratings)
+    #print(highest_ratings)
     return highest_ratings
 
 
