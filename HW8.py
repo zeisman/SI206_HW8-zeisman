@@ -65,7 +65,7 @@ def plot_rest_categories(db):
     plt.xlim([0, 5])
     plt.ylabel('Restaurant Categories')
     plt.suptitle('Types of Restaurants on South University Ave')
-    plt.show()
+    #plt.show()
     return restaurant_type_dict
 
 
@@ -103,45 +103,50 @@ def get_highest_rating(db): #Do this through DB as well
     cur = conn.cursor()
     highest_ratings = []
     plt.figure(1, figsize = (8,8))
+    plt.subplot(211)
+
     
-    cur.execute('SELECT categories.category, avg(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category ORDER BY avg(restaurants.rating) DESC')
-    i = 0
+    cur.execute('SELECT categories.category, avg(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category ORDER BY avg(restaurants.rating)')
     categories = []
     ratings1 = []
+    highest_rating1 = 0
+    highest_category = ''
     for row in cur:
-        #print(row)
-        if i == 0:
-            highest_ratings.append(row)
-            i += 1
+        print(row)
+        if row[1] > highest_rating1:
+            highest_rating1 = row[1]
+            highest_category = row[0]
         categories.append(str(row[0]))
         ratings1.append(row[1])
-    plt.subplot(211)
+    highest_ratings.append((highest_category, highest_rating1))
     plt.barh(categories, ratings1)
     plt.xlabel('Ratings')
     plt.xlim([0, 5])
     plt.ylabel('Categories')
-    #plt.set_title('Average Restaurant Ratings by Category')
+    plt.title('Average Restaurant Ratings by Category')
 
     
-    cur.execute('SELECT buildings.building, avg(restaurants.rating) FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id GROUP BY buildings.building ORDER BY avg(restaurants.rating) DESC')
+    cur.execute('SELECT buildings.building, avg(restaurants.rating) FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id GROUP BY buildings.building ORDER BY avg(restaurants.rating)')
     i = 0
     buildings = []
     ratings2 = []
+    highest_rating2 = 0
+    highest_building = ''
     for row in cur:
         #print(row)
-        if i == 0:
-            highest_ratings.append(row)
-            i += 1
+        if row[1] > highest_rating2:
+            highest_rating2 = row[1]
+            highest_building = row[0]
         buildings.append(str(row[0]))
         ratings2.append(row[1])
+    highest_ratings.append((highest_building, highest_rating2))
     plt.subplot(212)
     plt.barh(buildings, ratings2)
     plt.xlabel('Ratings')
     plt.xlim([0, 5])
     plt.ylabel('Buildings')
-    #plt set title of small graph
+    plt.title('Average Restaurant Ratings by Building')
     
-    #plt set title of entire thing
     plt.show()
     print(highest_ratings)
     return highest_ratings
